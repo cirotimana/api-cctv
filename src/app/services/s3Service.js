@@ -1,0 +1,59 @@
+const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { STSClient, AssumeRoleCommand } = require("@aws-sdk/client-sts");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const config = require("../../../config.json");
+
+// configuracion inicial con credenciales base
+const stsClient = new STSClient({
+  region: config.AWS_REGION,
+  credentials: {
+    accessKeyId: config.AWS_ACCESS_KEY,
+    secretAccessKey: config.AWS_SECRET_KEY,
+  },
+});
+
+// Obtiene un cliente S3 con credenciales temporales (AssumeRole)
+const getS3ClientWithRole = async () => {
+  try {
+    const command = new AssumeRoleCommand({
+      RoleArn: config.AWS_ROLE_ARN,
+      RoleSessionName: "cctv-session",
+    });
+
+    const response = await stsClient.send(command);
+
+    return new S3Client({
+      region: config.AWS_REGION,
+      credentials: {
+        accessKeyId: response.Credentials.AccessKeyId,
+        secretAccessKey: response.Credentials.SecretAccessKey,
+        sessionToken: response.Credentials.SessionToken,
+      },
+    });
+  } catch (error) {
+    console.error("Error asumiendo rol AWS:", error);
+    throw error;
+  }
+};
+
+// Genera una URL firmada para un objeto en S3
+const getPresignedUrl = async (key) => {
+  try {
+    const s3Client = await getS3ClientWithRole();
+    const command = new GetObjectCommand({
+      Bucket: config.AWS_BUCKET_NAME,
+      Key: key,
+    });
+
+    // URL valida por 15 minutos
+    const url = await getSignedUrl(s3Client, command, { expiresIn: 900 });
+    return url;
+  } catch (error) {
+    console.error("Error generando URL firmada:", error);
+    return null;
+  }
+};
+
+module.exports = {
+  getPresignedUrl,
+};

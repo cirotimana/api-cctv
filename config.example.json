@@ -1,0 +1,14 @@
+{
+  "NODE_ENV": "",
+  "APP_PORT": "",
+  "DB_USERNAME": "",
+  "DB_PASSWORD": "",
+  "DB_DATABASE": "",
+  "DB_HOST": "",
+  "DB_DIALECT": "",
+  "DB_PORT": "",
+  "JWT_EXPIRES_IN": "",
+  "JWT_SECRET": "",
+  "CORS_ORIGIN": ["", ""]
+}
+

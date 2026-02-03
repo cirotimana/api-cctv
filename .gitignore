@@ -1,0 +1,7 @@
+/node_modules
+/.vs
+/.vscode
+.env
+/src/assets/attachments
+/src/iisnode
+config.json
