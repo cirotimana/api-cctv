@@ -12,13 +12,13 @@ console.log(dbConfig);
 
 // Configuración de Sequelize con los datos del entorno actual
 const sequelize = new Sequelize(
-  config.DB_DATABASE,
-  config.DB_USERNAME,
-  config.DB_PASSWORD,
+  process.env.DB_DATABASE || config.DB_DATABASE,
+  process.env.DB_USERNAME || config.DB_USERNAME,
+  process.env.DB_PASSWORD || config.DB_PASSWORD,
   {
-    host: config.DB_HOST,
-    dialect: config.DB_DIALECT,
-    port: config.DB_PORT,
+    host: process.env.DB_HOST || config.DB_HOST,
+    dialect: process.env.DB_DIALECT || config.DB_DIALECT,
+    port: process.env.DB_PORT || config.DB_PORT,
     schema: 'sch_cctv',
     searchPath: 'sch_cctv',
     timezone: '-05:00',

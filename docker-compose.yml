@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cctv_server
+    ports:
+      - "3002:3000"
+    env_file:
+      - .env
+    environment:
+      - TZ=America/Lima
+    restart: always
