@@ -10,7 +10,7 @@ const authRequired = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, config.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || config.JWT_SECRET);
     req.userId = decoded.userId;
     next();
   } catch (error) {

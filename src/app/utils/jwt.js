@@ -5,9 +5,9 @@ require("dotenv").config();
 const createToken = (payload) => {
   return new Promise((resolve, reject) => {
     jwt.sign(
-      payload, config.JWT_SECRET,
+      payload, process.env.JWT_SECRET || config.JWT_SECRET,
       {
-        expiresIn: config.JWT_EXPIRES_IN,
+        expiresIn: process.env.JWT_EXPIRES_IN || config.JWT_EXPIRES_IN,
       },
       (error, token) => {
         if (error) {

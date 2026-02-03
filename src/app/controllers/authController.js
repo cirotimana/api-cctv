@@ -123,7 +123,9 @@ const verifyToken = async (req, res) => {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
-  jwt.verify(token, config.JWT_SECRET, async (err, decodedToken) => {
+  //process.env.PORT || config.APP_PORT
+
+  jwt.verify(token, process.env.JWT_SECRET || config.JWT_SECRET, async (err, decodedToken) => {
     if (err) {
       return res.status(401).json({ error: "Unauthorized" });
     }
