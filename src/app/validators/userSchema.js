@@ -51,16 +51,6 @@ const updateUserSchema = zod
       })
       .optional()
       .or(zod.literal('')),
-    confirmPassword: zod
-      .string()
-      .min(6, {
-        message: "Password must be at least 6 characters",
-      })
-      .max(255, {
-        message: "Password must be at most 255 characters",
-      })
-      .optional()
-      .or(zod.literal('')),
     profile_image: zod.string().optional(),
     username: zod
       .string()
@@ -71,18 +61,6 @@ const updateUserSchema = zod
         message: "Username must be at most 255 characters",
       }),
     is_active: zod.boolean().optional(),
-  })
-  .refine(
-    (data) => {
-      if (data.password || data.confirmPassword) {
-        return data.password === data.confirmPassword;
-      }
-      return true;
-    },
-    {
-      message: "Passwords don't match",
-      path: ["confirmPassword"],
-    }
-  );
+  });
 
 module.exports = { createUserSchema, updateUserSchema };

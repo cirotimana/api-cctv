@@ -76,15 +76,35 @@ const getUser = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
   try {
+    const { username, email, role_id, is_active } = req.query;
+    const where = { delete_at: null };
+    const { Op } = require("sequelize");
+
+    if (username) {
+      where.username = { [Op.iLike]: `%${username}%` };
+    }
+    if (email) {
+      where.email = { [Op.iLike]: `%${email}%` };
+    }
+    if (is_active !== undefined && is_active !== "") {
+      where.is_active = is_active === "true";
+    }
+
+    const include = [
+      {
+        model: Role,
+        through: { attributes: [] },
+      },
+    ];
+
+    if (role_id) {
+      include[0].where = { id: role_id };
+    }
+
     const users = await User.findAll({
-      where: { delete_at: null },
+      where,
       attributes: { exclude: ["password"] },
-      include: [
-        {
-          model: Role,
-          through: { attributes: [] },
-        },
-      ],
+      include,
     });
     res.status(200).json(users);
   } catch (error) {
@@ -104,7 +124,6 @@ const updateUser = async (req, res) => {
     }
 
     const {
-      currentPassword,
       profile_image,
       is_active,
       password,
@@ -114,12 +133,7 @@ const updateUser = async (req, res) => {
     } = req.body;
 
 
-    if (currentPassword && password) {
-      const isMatch = await bcrypt.compare(currentPassword, user.password);
-      if (!isMatch) {
-        return res.status(400).json({ error: "Current password is incorrect" });
-      }
-
+    if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
       user.password = hashedPassword;
     }
@@ -190,14 +204,14 @@ const deleteUser = async (req, res) => {
 
 const changePassword = async (req, res) => {
   try {
-    const { currentPassword, newPassword } = req.body;
+    const { newPassword } = req.body;
     const { id } = req.params;
 
     // Validar que los campos requeridos estén presentes
-    if (!currentPassword || !newPassword) {
+    if (!newPassword) {
       return res
         .status(400)
-        .json({ error: "Current and new passwords are required" });
+        .json({ error: "New password is required" });
     }
 
     // Buscar al usuario por ID
@@ -206,14 +220,6 @@ const changePassword = async (req, res) => {
     });
     if (!user) {
       return res.status(404).json({ error: "Usuario no encontrado" });
-    }
-
-    // Verificar la contraseña actual
-    const isMatch = await bcrypt.compare(currentPassword, user.password);
-    if (!isMatch) {
-      return res
-        .status(400)
-        .json({ error: "La contraseña actual es incorrecta" });
     }
 
     // Encriptar la nueva contraseña

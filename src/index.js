@@ -28,9 +28,18 @@ app.use((err, req, res, next) => {
 console.log(process.env.CORS_ORIGIN || config.CORS_ORIGIN); 
 
 // CORS Configuration
+let origin = process.env.CORS_ORIGIN || config.CORS_ORIGIN;
+try {
+  if (typeof origin === 'string') {
+    origin = JSON.parse(origin);
+  }
+} catch (error) {
+  console.warn('Failed to parse CORS_ORIGIN, using as string:', error);
+}
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || config.CORS_ORIGIN,
+    origin: origin,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true,
     optionsSuccessStatus: 204,
