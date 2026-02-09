@@ -1,15 +1,23 @@
 const socketIo = require("socket.io");
 require("dotenv").config();
-const config = require("../config");
 
 let io;
 
-console.log("CORS_ORIGIN:", config.CORS_ORIGIN);
+let origin = process.env.CORS_ORIGIN;
+try {
+  if (typeof origin === 'string') {
+    origin = JSON.parse(origin);
+  }
+} catch (error) {
+  console.warn('Failed to parse CORS_ORIGIN in socket.js, using as string:', error);
+}
+
+console.log("CORS_ORIGIN:", origin);
 
 const setupSocket = (server) => {
   io = socketIo(server, {
     cors: {
-      origin: config.CORS_ORIGIN,
+      origin: origin,
       methods: ["GET", "POST"],
       credentials: true,
     },

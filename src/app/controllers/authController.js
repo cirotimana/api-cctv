@@ -1,7 +1,6 @@
 const { isBefore, startOfDay } = require("date-fns");
 const Permission = require("../models/Permission");
 const { createToken } = require("../utils/jwt");
-const config = require("../../../config.json");
 const Module = require("../models/Module");
 const User = require("../models/User");
 const Role = require("../models/Role");
@@ -123,9 +122,7 @@ const verifyToken = async (req, res) => {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
-  //process.env.PORT || config.APP_PORT
-
-  jwt.verify(token, process.env.JWT_SECRET || config.JWT_SECRET, async (err, decodedToken) => {
+  jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
     if (err) {
       return res.status(401).json({ error: "Unauthorized" });
     }

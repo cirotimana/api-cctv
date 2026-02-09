@@ -1,27 +1,22 @@
 const { Sequelize } = require("sequelize");
-const config = require("../../config.json");
-
+require("dotenv").config(); // Ensure dotenv is loade
 
 // Determinar el entorno actual (por defecto 'development')
 const env = process.env.NODE_ENV || "development";
 
-// Obtener la configuración correspondiente al entorno
-const dbConfig = config[env];
-
-console.log(dbConfig);
-
 // Configuración de Sequelize con los datos del entorno actual
 const sequelize = new Sequelize(
-  process.env.DB_DATABASE || config.DB_DATABASE,
-  process.env.DB_USERNAME || config.DB_USERNAME,
-  process.env.DB_PASSWORD || config.DB_PASSWORD,
+  process.env.DB_DATABASE,
+  process.env.DB_USERNAME,
+  process.env.DB_PASSWORD,
   {
-    host: process.env.DB_HOST || config.DB_HOST,
-    dialect: process.env.DB_DIALECT || config.DB_DIALECT,
-    port: process.env.DB_PORT || config.DB_PORT,
+    host: process.env.DB_HOST,
+    dialect: process.env.DB_DIALECT,
+    port: process.env.DB_PORT,
     schema: 'sch_cctv',
     searchPath: 'sch_cctv',
     timezone: '-05:00',
+    logging: false, // Optional: disable logging for cleaner output
   }
 );
 

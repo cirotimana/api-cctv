@@ -1,7 +1,6 @@
 const { connect } = require("./config/database");
 const cookieParser = require("cookie-parser");
 const { setupSocket } = require("./socket");
-const config = require("../config.json");
 const routes = require("./routes");
 const express = require("express");
 const morgan = require("morgan");
@@ -13,7 +12,7 @@ require("dotenv").config();
 const app = express();
 const server = http.createServer(app);
 
-const port = process.env.PORT || config.APP_PORT;
+const port = process.env.PORT || process.env.APP_PORT;
 
 // Middlewares
 app.use(express.urlencoded({ extended: true }));
@@ -25,10 +24,10 @@ app.use((err, req, res, next) => {
   res.status(500).send("Something broke!");
 });
 
-console.log(process.env.CORS_ORIGIN || config.CORS_ORIGIN); 
+console.log(process.env.CORS_ORIGIN); 
 
 // CORS Configuration
-let origin = process.env.CORS_ORIGIN || config.CORS_ORIGIN;
+let origin = process.env.CORS_ORIGIN;
 try {
   if (typeof origin === 'string') {
     origin = JSON.parse(origin);
