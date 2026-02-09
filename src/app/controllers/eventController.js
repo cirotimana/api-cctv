@@ -205,7 +205,7 @@ const getDistinctNameHvCount = async (req, res) => {
 // Obtener eventos de EventHv agrupados por tipo de evento
 const getEventsHvByEventType = async (req, res) => {
   try {
-    const [events] = await sequelize.query("SELECT * FROM dbo.fn_geteventshvbyeventtype()");
+    const [events] = await sequelize.query("SELECT * FROM sch_cctv.fn_geteventshvbyeventtype()");
 
     return res.status(200).json(events);
   } catch (error) {
@@ -245,7 +245,7 @@ const removeDuplicateEventsHv = async (req, res) => {
   try {
     const formattedDate = moment(date).format("YYYY-MM-DD");
     const [results] = await sequelize.query(
-      "SELECT * FROM dbo.fn_removehikvisionduplicatesbydate(:date)",
+      "SELECT * FROM sch_cctv.fn_removehikvisionduplicatesbydate(:date)",
       {
         replacements: { date: formattedDate },
       }
@@ -540,7 +540,7 @@ const getDistinctNameSamsungCount = async (req, res) => {
 // Obtener eventos de EventSamsung agrupados por tipo de evento
 const getEventsSamsungByEventType = async (req, res) => {
   try {
-    const [events] = await sequelize.query("SELECT * FROM dbo.fn_geteventssamsungbyeventtype()");
+    const [events] = await sequelize.query("SELECT * FROM sch_cctv.fn_geteventssamsungbyeventtype()");
 
     return res.status(200).json(events);
   } catch (error) {
@@ -579,7 +579,7 @@ const removeDuplicateEventsSamsung = async (req, res) => {
 
   try {
     const formattedDate = moment(date).format("YYYY-MM-DD");
-    await sequelize.query("SELECT * FROM dbo.fn_removesamsungduplicatesbydate(:date)", {
+    await sequelize.query("SELECT * FROM sch_cctv.fn_removesamsungduplicatesbydate(:date)", {
       replacements: { date: formattedDate },
     });
     return res.json({ message: "Eventos duplicados eliminados" });
@@ -749,7 +749,7 @@ const getTransitionSummary = async (req, res) => {
     const formattedEndDate = moment(newEndDate).format("YYYY-MM-DD HH:mm:ss");
 
     const [eventsSummary] = await sequelize.query(
-      "SELECT * FROM dbo.fn_gettransitionsummary(:startDate, :endDate)",
+      "SELECT * FROM sch_cctv.fn_gettransitionsummary(:startDate, :endDate)",
       {
         replacements: {
           startDate: formattedStartDate,

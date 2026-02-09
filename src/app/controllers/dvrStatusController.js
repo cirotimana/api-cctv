@@ -163,7 +163,7 @@ const updateDvrStatusState = async (req, res) => {
 
 const getStoreStatusCounts = async (req, res) => {
   try {
-    const [results] = await sequelize.query("SELECT * FROM dbo.fn_getstorestatuscounts()");
+    const [results] = await sequelize.query("SELECT * FROM sch_cctv.fn_getstorestatuscounts()");
     res.status(200).json(results);
   } catch (error) {
     console.error("Error in getStoreStatusCounts:", error);

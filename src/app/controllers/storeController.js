@@ -35,7 +35,7 @@ const getStoreById = async (req, res) => {
 // Obtener la cantidad de stores por estado
 const getStoreStatusCounts = async (req, res) => {
   try {
-    const [results] = await sequelize.query("SELECT * FROM dbo.fn_gettotalstoresbystatus()");
+    const [results] = await sequelize.query("SELECT * FROM sch_cctv.fn_gettotalstoresbystatus()");
     res.status(200).json(results);
   } catch (error) {
     console.error("Error in getStoreStatusCounts:", error);

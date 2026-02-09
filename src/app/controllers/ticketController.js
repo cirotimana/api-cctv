@@ -300,7 +300,7 @@ const deleteTicket = async (req, res) => {
 // Función para obtener el Dashboard (estadísticas de tickets)
 const getDashboard = async (req, res) => {
   try {
-    const [results] = await sequelize.query("SELECT * FROM dbo.fn_getdashboardstats()");
+    const [results] = await sequelize.query("SELECT * FROM sch_cctv.fn_getdashboardstats()");
 
     const formattedResults = results.map((row) => ({
       status_description: row.status_description || row.statusdescription,
