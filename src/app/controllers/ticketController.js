@@ -11,6 +11,7 @@ const Store = require("../models/Store");
 const User = require("../models/User");
 const { Op } = require("sequelize");
 const { format } = require("date-fns");
+const { uploadToS3, getPresignedUrl } = require("../services/s3Service");
 require("dotenv").config();
 
 // Función para generar un nuevo código de ticket
@@ -465,9 +466,17 @@ const uploadDocument = async (req, res) => {
       return res.status(404).json({ message: "Ticket not found" });
     }
 
-    // obtener el archivo subido
+    // Subir archivo a S3
+    const filename = `${Date.now()}-${req.file.originalname}`;
+    const s3Key = await uploadToS3(
+      req.file.buffer,
+      filename,
+      req.file.mimetype
+    );
+
     const fileInfo = {
-      filename: req.file.filename, // Nombre del archivo
+      filename: filename,
+      s3Key: s3Key,
     };
 
     // si ya hay archivos adjuntos agregar el nuevo archivo al array
@@ -477,7 +486,6 @@ const uploadDocument = async (req, res) => {
     }
     attachments.push(fileInfo);
 
-    // aqui se guarda
     await ticket.update({ attachment: JSON.stringify(attachments) });
 
     res.status(200).json({ message: "File uploaded successfully", fileInfo });
@@ -526,20 +534,16 @@ const downloadAttachment = async (req, res) => {
       return res.status(404).json({ message: "File not found" });
     }
 
-    const filePath = path.join(__dirname, "../../assets/attachments", filename);
+    // Generar URL firmada de S3
+    const s3Key = fileInfo.s3Key || `retail/assets/${filename}`;
+    const presignedUrl = await getPresignedUrl(s3Key);
 
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ message: "File not found on server" });
+    if (!presignedUrl) {
+      return res.status(404).json({ message: "Error generating download URL" });
     }
 
-    res.type(path.extname(filename));
-
-    res.download(filePath, filename, (err) => {
-      if (err) {
-        console.error("Error al descargar el archivo:", err);
-        res.status(500).json({ message: "Error al descargar el archivo" });
-      }
-    });
+    // Devolver la URL firmada como JSON (no redirigir para evitar CORS)
+    res.json({ url: presignedUrl });
   } catch (error) {
     console.error("Error en downloadAttachment:", error);
     res.status(500).json({ message: error.message });

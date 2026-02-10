@@ -1,4 +1,4 @@
-const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { S3Client, GetObjectCommand, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { STSClient, AssumeRoleCommand } = require("@aws-sdk/client-sts");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 require("dotenv").config();
@@ -36,6 +36,27 @@ const getS3ClientWithRole = async () => {
   }
 };
 
+// Sube un archivo a S3
+const uploadToS3 = async (fileBuffer, filename, contentType) => {
+  try {
+    const s3Client = await getS3ClientWithRole();
+    const key = `retail/assets/${filename}`;
+
+    const command = new PutObjectCommand({
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: key,
+      Body: fileBuffer,
+      ContentType: contentType,
+    });
+
+    await s3Client.send(command);
+    return key;
+  } catch (error) {
+    console.error("Error subiendo archivo a S3:", error);
+    throw error;
+  }
+};
+
 // Genera una URL firmada para un objeto en S3
 const getPresignedUrl = async (key) => {
   try {
@@ -55,5 +76,6 @@ const getPresignedUrl = async (key) => {
 };
 
 module.exports = {
+  uploadToS3,
   getPresignedUrl,
 };

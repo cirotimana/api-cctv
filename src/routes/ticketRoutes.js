@@ -2,26 +2,8 @@ const ticketController = require("../app/controllers/ticketController");
 const router = require("express").Router();
 const multer = require("multer");
 
-const fs = require("fs");
-const path = require("path");
-
-
-const uploadDir = path.join(__dirname, ".../../../assets/attachments");
-
-// verifica si la carpeta existe, si no, créala
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadDir); // usa la ruta absoluta
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
-    }
-});
-
+// Usar memoria en lugar de disco para subir a S3
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 module.exports = upload;
